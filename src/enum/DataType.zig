@@ -2,7 +2,7 @@
 /// with the encodings to control the on disk storage format.
 /// For example INT16 is not included as a type since a good encoding of INT32
 /// would handle this.
-pub const ColumnType = enum(u8) {
+pub const DataType = enum(u8) {
     BOOLEAN = 0,
     INT32 = 1,
     INT64 = 2,
@@ -12,10 +12,10 @@ pub const ColumnType = enum(u8) {
     BYTE_ARRAY = 6,
     FIXED_LEN_BYTE_ARRAY = 7,
 
-    pub fn fromValue(value: u8) !ColumnType {
+    pub fn fromValue(value: u8) !DataType {
         if (value > 7) {
-            return error.InvalidColumnTypeValue;
+            return error.InvalidDataTypeValue;
         }
-        return @as(ColumnType, @enumFromInt(value));
+        return @as(DataType, @enumFromInt(value));
     }
 };

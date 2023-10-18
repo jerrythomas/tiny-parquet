@@ -19,5 +19,5 @@ test "BoundaryOrder: should throw InvalidBoundaryOrderValue" {
 }
 
 pub fn main() void {
-    _ = @import("std").testing.runTests();
+    _ = try std.testing.runAllTests();
 }

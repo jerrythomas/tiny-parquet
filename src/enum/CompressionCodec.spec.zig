@@ -29,5 +29,5 @@ test "CompressionCodec: should throw InvalidCompressionCodecValue" {
 }
 
 pub fn main() void {
-    _ = @import("std").testing.runTests();
+    _ = try std.testing.runAllTests();
 }

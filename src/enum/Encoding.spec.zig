@@ -35,5 +35,5 @@ test "Encoding: should throw InvalidEncodingValue" {
 }
 
 pub fn main() void {
-    _ = @import("std").testing.runTests();
+    _ = try std.testing.runAllTests();
 }
