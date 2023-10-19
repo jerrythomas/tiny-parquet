@@ -1,5 +1,5 @@
 const std = @import("std");
-const DataType = @import("DataType.zig").DataType;
+const DataType = @import("enum").DataType;
 
 test "DataType: should convert integer to enum value" {
     try std.testing.expectEqual(DataType.fromValue(0), DataType.BOOLEAN);

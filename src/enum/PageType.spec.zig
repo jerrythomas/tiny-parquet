@@ -1,5 +1,5 @@
 const std = @import("std");
-const PageType = @import("PageType.zig").PageType;
+const PageType = @import("enum").PageType;
 
 test "PageType: should convert integer to enum value" {
     try std.testing.expectEqual(PageType.fromValue(0), PageType.DATA_PAGE);

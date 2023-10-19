@@ -1,5 +1,5 @@
 const std = @import("std");
-const CompressionCodec = @import("CompressionCodec.zig").CompressionCodec;
+const CompressionCodec = @import("enum").CompressionCodec;
 
 test "CompressionCodec: should convert integer to enum value" {
     try std.testing.expectEqual(CompressionCodec.fromValue(0), CompressionCodec.UNCOMPRESSED);

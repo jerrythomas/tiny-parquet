@@ -1,26 +1,27 @@
 const std = @import("std");
-// const Config = @import("Config.zig").Config;
 const LocalFileSystem = @import("LocalFileSystem.zig").LocalFileSystem;
+const S3FileSystem = @import("S3FileSystem.zig").S3FileSystem;
 
 pub const FileSystem = union(enum) {
     local: LocalFileSystem,
+    s3: S3FileSystem,
 
-    pub fn init(self: *FileSystem, allocator: ?*std.mem.allocator) void {
-        return self.local.init(allocator);
-        // switch (self) {
-        //     inline else => |*case| case.init(allocator),
-        // }
+    pub fn fromPath(url: []const u8) !FileSystem {
+        return FileSystem{ .local = try LocalFileSystem.init(url) };
     }
-    pub fn inspect(self: *FileSystem, path: []const u8) !void {
-        return self.local.inspect(path);
-        // switch (self) {
-        // inline else => |case| @TypeOf(case).inspect(path),
-        // }
+    pub fn fromUrlAndKeys(url: []const u8, access_key: []const u8, secret_key: []const u8) !FileSystem {
+        var fs: FileSystem = undefined;
+        if (std.mem.startsWith(u8, url, "s3://")) {
+            fs = FileSystem{ .s3 = try S3FileSystem.init(url[5..], access_key, secret_key) };
+        } else {
+            return error.UnsupportedFileSystem;
+        }
+        return fs;
     }
-    pub fn read(self: *FileSystem, bytes: i64, offset: i64) ![]u8 {
-        return self.local.read(bytes, offset);
-        // switch (self) {
-        //      inline else => |*case| case.read(bytes, offset),
-        // }
+
+    pub fn read(self: *FileSystem, bytes: usize, offset: i64) ![]u8 {
+        switch (self.*) {
+            inline else => |*case| return try case.read(bytes, offset),
+        }
     }
 };

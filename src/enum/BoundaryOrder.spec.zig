@@ -1,5 +1,5 @@
 const std = @import("std");
-const BoundaryOrder = @import("BoundaryOrder.zig").BoundaryOrder;
+const BoundaryOrder = @import("enum").BoundaryOrder;
 
 test "BoundaryOrder: should convert integer to enum value" {
     try std.testing.expectEqual(BoundaryOrder.fromValue(0), BoundaryOrder.UNORDERED);

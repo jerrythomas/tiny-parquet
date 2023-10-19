@@ -1,3 +1,0 @@
-const FileAccessError = error{ AccessDenied, ProcessFdQuotaExceeded, SystemFdQuotaExceeded, Unexpected, SharingViolation, PathAlreadyExists, FileNotFound, PipeBusy, NameTooLong, InvalidUtf8, BadPathName, NetworkNotFound, InvalidHandle, SymLinkLoop, NoDevice, SystemResources, FileTooBig, IsDir, NoSpaceLeft, NotDir, DeviceBusy, FileLocksNotSupported, FileBusy, WouldBlock };
-const FileReadError = error{ AccessDenied, Unexpected, Unseekable, InvalidOffset, OutOfMemory, SystemResources, IsDir, WouldBlock, InputOutput, OperationAborted, BrokenPipe, ConnectionResetByPeer, ConnectionTimedOut, NotOpenForReading, NetNameDeleted };
-pub const FileSystemErrors = FileAccessError || FileReadError;
