@@ -4,13 +4,13 @@ const TimeUnit = @import("types").TimeUnit;
 test "TimeUnit: should convert integer to enum value" {
     var unit: TimeUnit = undefined;
     unit = try TimeUnit.fromValue(1);
-    try std.testing.expect(unit == TimeUnit.MILLIS);
+    try std.testing.expect(unit == TimeUnit.MILLISECONDS);
 
     unit = try TimeUnit.fromValue(2);
-    try std.testing.expect(unit == TimeUnit.MICROS);
+    try std.testing.expect(unit == TimeUnit.MICROSECONDS);
 
     unit = try TimeUnit.fromValue(3);
-    try std.testing.expect(unit == TimeUnit.NANOS);
+    try std.testing.expect(unit == TimeUnit.NANOSECONDS);
 }
 
 test "TimeUnit: should handle invalid integer values" {

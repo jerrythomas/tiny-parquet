@@ -14,14 +14,15 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    // Add the enum module to a Compile step, so that Zig code can actually @import("enum")
     const enum_module = b.addModule("enum", .{
         .source_file = .{ .path = "src/enum/main.zig" },
     });
     const types_module = b.addModule("types", .{
         .source_file = .{ .path = "src/types/main.zig" },
     });
-    // Add the storage module to a Compile step, so that Zig code can actually @import("storage")
+    const meta_module = b.addModule("meta", .{
+        .source_file = .{ .path = "src/meta/main.zig" },
+    });
     const storage_module = b.addModule("storage", .{
         .source_file = .{
             .path = "src/storage/main.zig",
@@ -33,22 +34,25 @@ pub fn build(b: *std.Build) void {
     lib.addModule("types", types_module);
     lib.addModule("enum", enum_module);
     lib.addModule("storage", storage_module);
+    lib.addModule("meta", meta_module);
     b.installArtifact(lib);
 
-    // const run_step = b.step("run", "Run the example code.");
+    const run_step = b.step("run", "Run the example code.");
 
-    // const example = b.addExecutable(.{
-    //     .name = "example",
-    //     .root_source_file = .{ .path = "src/main.zig" },
-    //     .target = target,
-    //     .optimize = optimize,
-    // });
+    const example = b.addExecutable(.{
+        .name = "example",
+        .root_source_file = .{ .path = "src/main.zig" },
+        .target = target,
+        .optimize = optimize,
+    });
 
-    // example.addModule("enum", enum_module);
-    // example.addModule("storage", storage_module);
+    example.addModule("enum", enum_module);
+    example.addModule("types", types_module);
+    example.addModule("storage", storage_module);
+    example.addModule("meta", meta_module);
 
-    // const run_example = b.addRunArtifact(example);
-    // run_step.dependOn(&run_example.step);
+    const run_example = b.addRunArtifact(example);
+    run_step.dependOn(&run_example.step);
 
     const tests = b.addTest(.{
         .root_source_file = .{ .path = "src/main.zig" },
@@ -59,6 +63,7 @@ pub fn build(b: *std.Build) void {
     tests.addModule("types", types_module);
     tests.addModule("enum", enum_module);
     tests.addModule("storage", storage_module);
+    tests.addModule("meta", meta_module);
 
     const run_tests = b.addRunArtifact(tests);
 
