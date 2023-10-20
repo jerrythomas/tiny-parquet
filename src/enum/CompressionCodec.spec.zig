@@ -13,14 +13,14 @@ test "CompressionCodec: should convert integer to enum value" {
 }
 
 test "CompressionCodec: should convert from enum" {
-    try std.testing.expectEqual(@intFromEnum(CompressionCodec.UNCOMPRESSED), 0);
-    try std.testing.expectEqual(@intFromEnum(CompressionCodec.SNAPPY), 1);
-    try std.testing.expectEqual(@intFromEnum(CompressionCodec.GZIP), 2);
-    try std.testing.expectEqual(@intFromEnum(CompressionCodec.LZO), 3);
-    try std.testing.expectEqual(@intFromEnum(CompressionCodec.BROTLI), 4);
-    try std.testing.expectEqual(@intFromEnum(CompressionCodec.LZ4), 5);
-    try std.testing.expectEqual(@intFromEnum(CompressionCodec.ZSTD), 6);
-    try std.testing.expectEqual(@intFromEnum(CompressionCodec.LZ4_RAW), 7);
+    try std.testing.expect(CompressionCodec.UNCOMPRESSED.toValue() == 0);
+    try std.testing.expect(CompressionCodec.SNAPPY.toValue() == 1);
+    try std.testing.expect(CompressionCodec.GZIP.toValue() == 2);
+    try std.testing.expect(CompressionCodec.LZO.toValue() == 3);
+    try std.testing.expect(CompressionCodec.BROTLI.toValue() == 4);
+    try std.testing.expect(CompressionCodec.LZ4.toValue() == 5);
+    try std.testing.expect(CompressionCodec.ZSTD.toValue() == 6);
+    try std.testing.expect(CompressionCodec.LZ4_RAW.toValue() == 7);
 }
 
 test "CompressionCodec: should throw InvalidCompressionCodecValue" {

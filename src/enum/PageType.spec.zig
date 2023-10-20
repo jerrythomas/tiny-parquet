@@ -9,10 +9,10 @@ test "PageType: should convert integer to enum value" {
 }
 
 test "PageType: should convert from enum" {
-    try std.testing.expectEqual(@intFromEnum(PageType.DATA_PAGE), 0);
-    try std.testing.expectEqual(@intFromEnum(PageType.INDEX_PAGE), 1);
-    try std.testing.expectEqual(@intFromEnum(PageType.DICTIONARY_PAGE), 2);
-    try std.testing.expectEqual(@intFromEnum(PageType.DATA_PAGE_V2), 3);
+    try std.testing.expect(PageType.DATA_PAGE.toValue() == 0);
+    try std.testing.expect(PageType.INDEX_PAGE.toValue() == 1);
+    try std.testing.expect(PageType.DICTIONARY_PAGE.toValue() == 2);
+    try std.testing.expect(PageType.DATA_PAGE_V2.toValue() == 3);
 }
 
 test "PageType: should throw InvalidPageTypeValue" {

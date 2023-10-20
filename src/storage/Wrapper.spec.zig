@@ -1,21 +1,21 @@
 const std = @import("std");
-const FileSystem = @import("fs").FileSystem;
+const Wrapper = @import("storage").Wrapper;
 
 var default_allocator = std.heap.page_allocator;
 const access_key = "access_key";
 const secret_key = "secret_key";
 
-test "FileSystem: should initialize local file system" {
+test "Wrapper: should initialize local file system" {
     var file = "spec/fixtures/example.txt";
-    var fs = try FileSystem.fromPath(file);
+    var fs = try Wrapper.fromPath(file);
     try std.testing.expectEqualStrings(file, fs.local.path);
     try std.testing.expectEqual(default_allocator, fs.local.allocator);
     try std.testing.expectEqual(@as(?u64, 10), fs.local.size);
 }
 
-test "FileSystem: should initialize s3 file system" {
+test "Wrapper: should initialize s3 file system" {
     var file = "s3://spec/fixtures/example.txt";
-    var fs = try FileSystem.fromUrlAndKeys(file, access_key, secret_key);
+    var fs = try Wrapper.fromUrlAndKeys(file, access_key, secret_key);
     try std.testing.expectEqualStrings(file[5..], fs.s3.path);
     try std.testing.expectEqualStrings(access_key, fs.s3.access_key);
     try std.testing.expectEqualStrings(secret_key, fs.s3.secret_key);
@@ -23,9 +23,9 @@ test "FileSystem: should initialize s3 file system" {
     try std.testing.expectEqual(@as(?u64, 10), fs.s3.size);
 }
 
-test "FileSystem: should read random bytes from a local file" {
+test "Wrapper: should read random bytes from a local file" {
     var file = "spec/fixtures/example.txt";
-    var fs = try FileSystem.fromPath(file);
+    var fs = try Wrapper.fromPath(file);
 
     var data = try fs.read(4, 0);
     try std.testing.expectEqualStrings("hell", data);

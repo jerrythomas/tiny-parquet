@@ -10,4 +10,8 @@ pub const FieldRepetitionType = enum(u8) {
         }
         return @as(FieldRepetitionType, @enumFromInt(value));
     }
+
+    pub fn toValue(self: FieldRepetitionType) u8 {
+        return @intFromEnum(self);
+    }
 };

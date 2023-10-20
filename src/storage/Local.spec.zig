@@ -1,22 +1,19 @@
 const std = @import("std");
-const S3FileSystem = @import("fs").S3FileSystem;
+const Local = @import("storage").Local;
 
 var default_allocator = std.heap.page_allocator;
 
-const access_key = "access_key";
-const secret_key = "secret_key";
-
-test "S3FileSystem: should initialize" {
+test "Local: should initialize" {
     var file = "spec/fixtures/example.txt";
-    const lfs = try S3FileSystem.init(file, access_key, secret_key);
+    const lfs = try Local.init(file);
     try std.testing.expectEqualStrings(file, lfs.path);
     try std.testing.expectEqual(default_allocator, lfs.allocator);
     try std.testing.expectEqual(@as(?u64, 10), lfs.size);
 }
 
-test "S3FileSystem: should read random bytes from a file" {
+test "Local: should read random bytes from a file" {
     var file = "spec/fixtures/example.txt";
-    const lfs = try S3FileSystem.init(file, access_key, secret_key);
+    const lfs = try Local.init(file);
 
     var data = try lfs.read(4, 0);
     try std.testing.expectEqualStrings("hell", data);
@@ -28,9 +25,9 @@ test "S3FileSystem: should read random bytes from a file" {
     try std.testing.expectEqualStrings("zig!", data);
 }
 
-test "S3FileSystem: should raise error" {
+test "Local: should raise error" {
     var file = "spec/fixtures/example.txt";
-    const lfs = try S3FileSystem.init(file, access_key, secret_key);
+    const lfs = try Local.init(file);
 
     var result = lfs.read(4, 11);
     try std.testing.expectEqual(result, error.InvalidOffset);

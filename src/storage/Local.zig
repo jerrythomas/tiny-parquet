@@ -1,12 +1,12 @@
 const std = @import("std");
 
-pub const LocalFileSystem = struct {
+pub const Local = struct {
     path: []const u8 = undefined,
     size: u64 = 0,
     allocator: std.mem.Allocator = std.heap.page_allocator,
 
-    pub fn init(url: []const u8) !LocalFileSystem {
-        var fs = LocalFileSystem{};
+    pub fn init(url: []const u8) !Local {
+        var fs = Local{};
 
         const file = try std.fs.cwd().openFile(url, .{});
         defer file.close();
@@ -17,7 +17,7 @@ pub const LocalFileSystem = struct {
         return fs;
     }
 
-    pub fn read(self: LocalFileSystem, bytes: usize, offset: i64) ![]u8 {
+    pub fn read(self: Local, bytes: usize, offset: i64) ![]u8 {
         if (self.size == 0) return error.InvalidOffset;
 
         var adjustedOffset: u64 = @as(u64, @abs(offset));

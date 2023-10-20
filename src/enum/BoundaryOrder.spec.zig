@@ -8,9 +8,9 @@ test "BoundaryOrder: should convert integer to enum value" {
 }
 
 test "BoundaryOrder: should convert from enum" {
-    try std.testing.expectEqual(@intFromEnum(BoundaryOrder.UNORDERED), 0);
-    try std.testing.expectEqual(@intFromEnum(BoundaryOrder.ASCENDING), 1);
-    try std.testing.expectEqual(@intFromEnum(BoundaryOrder.DESCENDING), 2);
+    try std.testing.expect(BoundaryOrder.UNORDERED.toValue() == 0);
+    try std.testing.expect(BoundaryOrder.ASCENDING.toValue() == 1);
+    try std.testing.expect(BoundaryOrder.DESCENDING.toValue() == 2);
 }
 
 test "BoundaryOrder: should throw InvalidBoundaryOrderValue" {

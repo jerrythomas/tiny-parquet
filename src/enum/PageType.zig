@@ -10,4 +10,8 @@ pub const PageType = enum(u8) {
         }
         return @as(PageType, @enumFromInt(value));
     }
+
+    pub fn toValue(self: PageType) u8 {
+        return @intFromEnum(self);
+    }
 };

@@ -23,4 +23,8 @@ pub const CompressionCodec = enum(u8) {
             return error.InvalidCompressionCodecValue;
         }
     }
+
+    pub fn toValue(self: CompressionCodec) u8 {
+        return @intFromEnum(self);
+    }
 };

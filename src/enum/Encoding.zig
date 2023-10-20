@@ -16,4 +16,8 @@ pub const Encoding = enum(u8) {
 
         return @as(Encoding, @enumFromInt(value));
     }
+
+    pub fn toValue(self: Encoding) u8 {
+        return @intFromEnum(self);
+    }
 };

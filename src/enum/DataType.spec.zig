@@ -13,14 +13,14 @@ test "DataType: should convert integer to enum value" {
 }
 
 test "DataType: should convert from enum" {
-    try std.testing.expectEqual(@intFromEnum(DataType.BOOLEAN), 0);
-    try std.testing.expectEqual(@intFromEnum(DataType.INT32), 1);
-    try std.testing.expectEqual(@intFromEnum(DataType.INT64), 2);
-    try std.testing.expectEqual(@intFromEnum(DataType.INT96), 3);
-    try std.testing.expectEqual(@intFromEnum(DataType.FLOAT), 4);
-    try std.testing.expectEqual(@intFromEnum(DataType.DOUBLE), 5);
-    try std.testing.expectEqual(@intFromEnum(DataType.BYTE_ARRAY), 6);
-    try std.testing.expectEqual(@intFromEnum(DataType.FIXED_LEN_BYTE_ARRAY), 7);
+    try std.testing.expect(DataType.BOOLEAN.toValue() == 0);
+    try std.testing.expect(DataType.INT32.toValue() == 1);
+    try std.testing.expect(DataType.INT64.toValue() == 2);
+    try std.testing.expect(DataType.INT96.toValue() == 3);
+    try std.testing.expect(DataType.FLOAT.toValue() == 4);
+    try std.testing.expect(DataType.DOUBLE.toValue() == 5);
+    try std.testing.expect(DataType.BYTE_ARRAY.toValue() == 6);
+    try std.testing.expect(DataType.FIXED_LEN_BYTE_ARRAY.toValue() == 7);
 }
 
 test "DataType: should throw InvalidDataTypeValue" {

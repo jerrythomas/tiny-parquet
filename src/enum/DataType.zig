@@ -18,4 +18,8 @@ pub const DataType = enum(u8) {
         }
         return @as(DataType, @enumFromInt(value));
     }
+
+    pub fn toValue(self: DataType) u8 {
+        return @intFromEnum(self);
+    }
 };

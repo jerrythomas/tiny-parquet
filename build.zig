@@ -8,7 +8,7 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const lib = b.addStaticLibrary(.{
-        .name = "tiny-pq",
+        .name = "tinypq",
         .root_source_file = .{ .path = "src/main.zig" },
         .target = target,
         .optimize = optimize,
@@ -18,39 +18,47 @@ pub fn build(b: *std.Build) void {
     const enum_module = b.addModule("enum", .{
         .source_file = .{ .path = "src/enum/main.zig" },
     });
-    // Add the fs module to a Compile step, so that Zig code can actually @import("fs")
-    const fs_module = b.addModule("fs", .{
+    const types_module = b.addModule("types", .{
+        .source_file = .{ .path = "src/types/main.zig" },
+    });
+    // Add the storage module to a Compile step, so that Zig code can actually @import("storage")
+    const storage_module = b.addModule("storage", .{
         .source_file = .{
-            .path = "src/fs/main.zig",
+            .path = "src/storage/main.zig",
         },
         .dependencies = &.{
             .{ .name = "enum", .module = enum_module },
         },
     });
+    lib.addModule("types", types_module);
     lib.addModule("enum", enum_module);
-    lib.addModule("fs", fs_module);
+    lib.addModule("storage", storage_module);
     b.installArtifact(lib);
 
-    const run_step = b.step("run", "Run the example code.");
+    // const run_step = b.step("run", "Run the example code.");
 
-    const example = b.addExecutable(.{
-        .name = "example",
-        .root_source_file = .{ .path = "src/main.zig" },
-        .target = target,
-        .optimize = optimize,
-    });
-    example.addModule("enum", enum_module);
+    // const example = b.addExecutable(.{
+    //     .name = "example",
+    //     .root_source_file = .{ .path = "src/main.zig" },
+    //     .target = target,
+    //     .optimize = optimize,
+    // });
 
-    const run_example = b.addRunArtifact(example);
-    run_step.dependOn(&run_example.step);
+    // example.addModule("enum", enum_module);
+    // example.addModule("storage", storage_module);
+
+    // const run_example = b.addRunArtifact(example);
+    // run_step.dependOn(&run_example.step);
 
     const tests = b.addTest(.{
         .root_source_file = .{ .path = "src/main.zig" },
         .target = target,
         .optimize = optimize,
     });
+
+    tests.addModule("types", types_module);
     tests.addModule("enum", enum_module);
-    tests.addModule("fs", fs_module);
+    tests.addModule("storage", storage_module);
 
     const run_tests = b.addRunArtifact(tests);
 

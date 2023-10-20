@@ -1,14 +1,14 @@
 const std = @import("std");
 
-pub const S3FileSystem = struct {
+pub const S3 = struct {
     path: []const u8 = undefined,
     size: u64 = 0,
     access_key: []const u8 = undefined,
     secret_key: []const u8 = undefined,
     allocator: std.mem.Allocator = std.heap.page_allocator,
 
-    pub fn init(url: []const u8, access_key: []const u8, secret_key: []const u8) !S3FileSystem {
-        var fs = S3FileSystem{};
+    pub fn init(url: []const u8, access_key: []const u8, secret_key: []const u8) !S3 {
+        var fs = S3{};
 
         const file = try std.fs.cwd().openFile(url, .{});
         defer file.close();
@@ -22,7 +22,7 @@ pub const S3FileSystem = struct {
         return fs;
     }
 
-    pub fn read(self: S3FileSystem, bytes: usize, offset: i64) ![]u8 {
+    pub fn read(self: S3, bytes: usize, offset: i64) ![]u8 {
         if (self.size == 0) {
             return error.InvalidFile;
         }

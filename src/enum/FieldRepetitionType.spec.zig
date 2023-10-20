@@ -8,9 +8,9 @@ test "FieldRepetitionType: should convert integer to enum value" {
 }
 
 test "FieldRepetitionType: should convert from enum" {
-    try std.testing.expectEqual(@intFromEnum(FieldRepetitionType.REQUIRED), 0);
-    try std.testing.expectEqual(@intFromEnum(FieldRepetitionType.OPTIONAL), 1);
-    try std.testing.expectEqual(@intFromEnum(FieldRepetitionType.REPEATED), 2);
+    try std.testing.expect(FieldRepetitionType.REQUIRED.toValue() == 0);
+    try std.testing.expect(FieldRepetitionType.OPTIONAL.toValue() == 1);
+    try std.testing.expect(FieldRepetitionType.REPEATED.toValue() == 2);
 }
 
 test "FieldRepetitionType: should throw InvalidFieldRepetitionTypeValue" {

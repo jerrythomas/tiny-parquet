@@ -15,16 +15,16 @@ test "Encoding: should convert integer to enum value" {
 }
 
 test "Encoding: should convert from enum" {
-    try std.testing.expectEqual(@intFromEnum(Encoding.PLAIN), 0);
-    // try std.testing.expectEqual(@intFromEnum(Encoding.SNAPPY), 1);
-    try std.testing.expectEqual(@intFromEnum(Encoding.PLAIN_DICTIONARY), 2);
-    try std.testing.expectEqual(@intFromEnum(Encoding.RLE), 3);
-    try std.testing.expectEqual(@intFromEnum(Encoding.BIT_PACKED), 4);
-    try std.testing.expectEqual(@intFromEnum(Encoding.DELTA_BINARY_PACKED), 5);
-    try std.testing.expectEqual(@intFromEnum(Encoding.DELTA_LENGTH_BYTE_ARRAY), 6);
-    try std.testing.expectEqual(@intFromEnum(Encoding.DELTA_BYTE_ARRAY), 7);
-    try std.testing.expectEqual(@intFromEnum(Encoding.RLE_DICTIONARY), 8);
-    try std.testing.expectEqual(@intFromEnum(Encoding.BYTE_STREAM_SPLIT), 9);
+    try std.testing.expect(Encoding.PLAIN.toValue() == 0);
+    // try std.testing.expect(Encoding.SNAPPY.toValue() == 1);
+    try std.testing.expect(Encoding.PLAIN_DICTIONARY.toValue() == 2);
+    try std.testing.expect(Encoding.RLE.toValue() == 3);
+    try std.testing.expect(Encoding.BIT_PACKED.toValue() == 4);
+    try std.testing.expect(Encoding.DELTA_BINARY_PACKED.toValue() == 5);
+    try std.testing.expect(Encoding.DELTA_LENGTH_BYTE_ARRAY.toValue() == 6);
+    try std.testing.expect(Encoding.DELTA_BYTE_ARRAY.toValue() == 7);
+    try std.testing.expect(Encoding.RLE_DICTIONARY.toValue() == 8);
+    try std.testing.expect(Encoding.BYTE_STREAM_SPLIT.toValue() == 9);
 }
 
 test "Encoding: should throw InvalidEncodingValue" {
