@@ -22,6 +22,10 @@ pub fn build(b: *std.Build) void {
     });
     const meta_module = b.addModule("meta", .{
         .source_file = .{ .path = "src/meta/main.zig" },
+        .dependencies = &.{
+            .{ .name = "enum", .module = enum_module },
+            .{ .name = "types", .module = types_module },
+        },
     });
     const storage_module = b.addModule("storage", .{
         .source_file = .{

@@ -9,7 +9,7 @@ test "Reader: should initialize local file system" {
     var file = "spec/fixtures/example.txt";
     var fs = try Reader.fromPath(file);
     try std.testing.expectEqualStrings(file, fs.local.path);
-    try std.testing.expectEqual(default_allocator, fs.local.allocator);
+    try std.testing.expectEqual(default_allocator, fs.local.allocator.*);
     try std.testing.expectEqual(@as(?u64, 10), fs.local.size);
 }
 
@@ -19,7 +19,7 @@ test "Reader: should initialize s3 file system" {
     try std.testing.expectEqualStrings(file[5..], fs.s3.path);
     try std.testing.expectEqualStrings(access_key, fs.s3.access_key);
     try std.testing.expectEqualStrings(secret_key, fs.s3.secret_key);
-    try std.testing.expectEqual(default_allocator, fs.s3.allocator);
+    try std.testing.expectEqual(default_allocator, fs.s3.allocator.*);
     try std.testing.expectEqual(@as(?u64, 10), fs.s3.size);
 }
 

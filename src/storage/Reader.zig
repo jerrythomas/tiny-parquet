@@ -24,4 +24,10 @@ pub const Reader = union(enum) {
             inline else => |*case| return try case.read(bytes, offset),
         }
     }
+
+    pub fn allocator(self: *Reader) *std.mem.Allocator {
+        switch (self.*) {
+            inline else => |*case| return case.allocator,
+        }
+    }
 };

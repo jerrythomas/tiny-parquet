@@ -7,7 +7,7 @@ test "Local: should initialize" {
     var file = "spec/fixtures/example.txt";
     const lfs = try Local.init(file);
     try std.testing.expectEqualStrings(file, lfs.path);
-    try std.testing.expectEqual(default_allocator, lfs.allocator);
+    try std.testing.expectEqual(default_allocator, lfs.allocator.*);
     try std.testing.expectEqual(@as(?u64, 10), lfs.size);
 }
 

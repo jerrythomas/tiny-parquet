@@ -10,7 +10,7 @@ test "S3: should initialize" {
     var file = "spec/fixtures/example.txt";
     const lfs = try S3.init(file, access_key, secret_key);
     try std.testing.expectEqualStrings(file, lfs.path);
-    try std.testing.expectEqual(default_allocator, lfs.allocator);
+    try std.testing.expectEqual(default_allocator, lfs.allocator.*);
     try std.testing.expectEqual(@as(?u64, 10), lfs.size);
 }
 

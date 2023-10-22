@@ -1,62 +1,127 @@
 const std = @import("std");
-
-var default_allocator = std.heap.page_allocator;
+const Endian = std.builtin.Endian;
+const AttributeReader = @import("AttributeReader.zig").AttributeReader;
+const AttributeWriter = @import("AttributeWriter.zig").AttributeWriter;
 
 const DataType = @import("enum").DataType;
 const FieldRepetitionType = @import("enum").FieldRepetitionType;
 const ConvertedType = @import("enum").ConvertedType;
-const LogicalType = @import("enum").LogicalType;
+const LogicalType = @import("types").LogicalType;
+
+var default_allocator = std.heap.page_allocator;
 
 pub const SchemaElement = struct {
-    type: ?DataType = null, // Optional Type, so we make it nullable.
-    type_length: ?i32 = null, // Optional i32, so we make it nullable.
-    repetition_type: ?FieldRepetitionType = null, // Optional enum, so we make it nullable.
-    name: []const u8, // Required string. Zig represents strings as slices of u8.
-    num_children: ?i32 = null, // Optional i32, so we make it nullable.
-    converted_type: ?ConvertedType = null, // Optional enum, so we make it nullable.
-    scale: ?i32 = null, // Optional i32, so we make it nullable.
-    precision: ?i32 = null, // Optional i32, so we make it nullable.
-    field_id: ?i32 = null, // Optional i32, so we make it nullable.
-    logicalType: ?LogicalType = null, // Optional enum, so we make it nullable.
+    type: ?DataType = null,
+    type_length: ?i32 = null,
+    repetition_type: ?FieldRepetitionType = null,
+    name: []const u8 = undefined,
+    num_children: ?u32 = null,
+    converted_type: ?ConvertedType = null,
+    scale: ?i32 = null,
+    precision: ?i32 = null,
+    field_id: ?i32 = null,
+    logicalType: ?LogicalType = null,
+    children: ?[]SchemaElement = null,
+    allocator: *std.mem.Allocator = &default_allocator,
 
-    pub fn init() SchemaElement {
-        return SchemaElement{};
-    }
-    pub fn fromBuffer(self: *SchemaElement, buffer: []const u8) !void {
-        const reader = std.io.bufferedReader(buffer);
-
-        // Assuming the order in the buffer is the same as the Thrift structure order
-        self.type = DataType.fromValue(try reader.readIntLittle(i32));
-        self.type_length = try reader.readIntLittle(i32);
-        self.repetition_type = FieldRepetitionType.fromValue(try reader.readIntLittle(i32));
-        self.name = try reader.readSliceUntilDelimiterOrEof('0'); // Assuming '0' as delimiter and null-terminated strings
-        self.num_children = try reader.readIntLittle(i32);
-        self.converted_type = ConvertedType.fromValue(try reader.readIntLittle(i32));
-        self.scale = try reader.readIntLittle(i32);
-        self.precision = try reader.readIntLittle(i32);
-        self.field_id = try reader.readIntLittle(i32);
-        self.logicalType = LogicalType.fromValue(try reader.readIntLittle(i32));
+    pub fn init(allocator: ?*std.mem.Allocator) !SchemaElement {
+        return SchemaElement{ .allocator = allocator orelse &default_allocator };
     }
 
-    pub fn toBuffer(self: *SchemaElement, mem_allocater: ?*std.mem.Allocator) ![]u8 {
-        const allocator = mem_allocater orelse &default_allocator;
+    // Each attribute is read in the sequence it is expected in the file.
+    pub fn fromBuffer(self: *SchemaElement, buffer: []const u8) !usize {
+        var reader = AttributeReader.init(buffer);
 
-        // Assuming fixed sizes for simplicity: 4 bytes for each i32 and 256 bytes for the name.
-        // Adjust accordingly for your actual requirements.
-        var buffer = try allocator.alloc(u8, 4 * 9 + 256);
-        const writer = std.io.bufferedWriter(buffer);
+        var enum_value = try reader.readOptionalNumber(u8);
+        if (enum_value != null) self.type = try DataType.fromValue(enum_value.?);
 
-        try writer.writeIntLittle(i32, self.type.?.value orelse 0);
-        try writer.writeIntLittle(i32, self.type_length orelse 0);
-        try writer.writeIntLittle(i32, self.repetition_type.?.value orelse 0);
-        try writer.writeAll(self.name);
-        try writer.writeIntLittle(i32, self.num_children orelse 0);
-        try writer.writeIntLittle(i32, self.converted_type.?.value orelse 0);
-        try writer.writeIntLittle(i32, self.scale orelse 0);
-        try writer.writeIntLittle(i32, self.precision orelse 0);
-        try writer.writeIntLittle(i32, self.field_id orelse 0);
-        try writer.writeIntLittle(i32, self.logicalType.?.value orelse 0);
+        self.type_length = try reader.readOptionalNumber(i32);
 
-        return buffer;
+        enum_value = try reader.readOptionalNumber(u8);
+        if (enum_value != null) self.repetition_type = try FieldRepetitionType.fromValue(enum_value.?);
+
+        self.name = try reader.readString();
+        self.num_children = try reader.readOptionalNumber(u32);
+
+        enum_value = try reader.readOptionalNumber(u8);
+        if (enum_value != null) self.converted_type = try ConvertedType.fromValue(enum_value.?);
+
+        self.scale = try reader.readOptionalNumber(i32);
+        self.precision = try reader.readOptionalNumber(i32);
+        self.field_id = try reader.readOptionalNumber(i32);
+
+        enum_value = try reader.readOptionalNumber(u8);
+        if (enum_value != null) self.logicalType = try LogicalType.fromValue(enum_value.?);
+
+        if (self.num_children != null and self.num_children.? > 0) {
+            std.debug.print("\nReading children\n", .{});
+            var offset = reader.offset;
+            self.children = try self.allocator.alloc(SchemaElement, self.num_children.?);
+            for (self.children.?) |*child| {
+                child.* = try SchemaElement.init(self.allocator);
+                var bytesRead = try child.fromBuffer(reader.buffer[reader.offset..]);
+                if (bytesRead > 0) offset += bytesRead;
+            }
+            return offset;
+        }
+        return reader.offset;
+    }
+
+    pub fn toBuffer(self: *SchemaElement) ![]u8 {
+        var writer = AttributeWriter.init(self.allocator);
+
+        if (self.type) |type_val| {
+            try writer.writeNumber(u8, type_val.toValue(), true);
+        } else {
+            try writer.writeNumber(u8, null, true);
+        }
+
+        try writer.writeNumber(i32, self.type_length, self.type_length != null);
+
+        if (self.repetition_type) |rep_type_val| {
+            try writer.writeNumber(u8, rep_type_val.toValue(), true);
+        } else {
+            try writer.writeNumber(u8, null, true);
+        }
+
+        try writer.writeString(self.name, false);
+        try writer.writeNumber(i32, self.num_children, self.num_children != null);
+
+        if (self.converted_type) |conv_type_val| {
+            try writer.writeNumber(u8, conv_type_val.toValue(), true);
+        } else {
+            try writer.writeNumber(u8, null, true);
+        }
+
+        try writer.writeNumber(i32, self.scale, self.scale != null);
+        try writer.writeNumber(i32, self.precision, self.precision != null);
+        try writer.writeNumber(i32, self.field_id, self.field_id != null);
+
+        if (self.logicalType) |log_type_val| {
+            try writer.writeNumber(u8, log_type_val.toValue(), true);
+        } else {
+            try writer.writeNumber(u8, null, true);
+        }
+
+        // Serialize children
+        if (self.children) |children_array| {
+            for (children_array) |child| {
+                var childBuffer = try child.toBuffer();
+                try writer.buffer.append(childBuffer);
+            }
+        }
+
+        return writer.finalize();
+    }
+
+    pub fn deinit(self: *SchemaElement) void {
+        // self.allocator.free(self.name);
+
+        if (self.children != null) {
+            for (self.children.?) |*child| {
+                child.deinit();
+            }
+            // self.allocator.free(self.children);
+        }
     }
 };

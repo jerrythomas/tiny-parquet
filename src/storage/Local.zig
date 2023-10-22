@@ -1,9 +1,11 @@
 const std = @import("std");
 
+var default_allocator = std.heap.page_allocator;
+
 pub const Local = struct {
     path: []const u8 = undefined,
     size: u64 = 0,
-    allocator: std.mem.Allocator = std.heap.page_allocator,
+    allocator: *std.mem.Allocator = &default_allocator,
 
     pub fn init(url: []const u8) !Local {
         var fs = Local{};
@@ -38,7 +40,9 @@ pub const Local = struct {
         try file.seekTo(adjustedOffset);
         var bytesRead = try file.readAll(buffer);
 
-        if (bytesRead < bytes) return buffer[0..bytesRead];
+        if (bytesRead < bytes) {
+            return buffer[0..bytesRead];
+        }
 
         return buffer;
     }

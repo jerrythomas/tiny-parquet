@@ -13,9 +13,8 @@ pub const DataType = enum(u8) {
     FIXED_LEN_BYTE_ARRAY = 7,
 
     pub fn fromValue(value: u8) !DataType {
-        if (value > 7) {
-            return error.InvalidDataTypeValue;
-        }
+        if (value > 7) return error.InvalidDataTypeValue;
+
         return @as(DataType, @enumFromInt(value));
     }
 

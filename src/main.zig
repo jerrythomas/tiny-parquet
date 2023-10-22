@@ -26,7 +26,13 @@ test {
     _ = @import("types/TimeUnit.spec.zig");
     _ = @import("types/LogicalType.spec.zig");
 
+    _ = @import("meta/AttributeReader.spec.zig");
+    _ = @import("meta/AttributeWriter.spec.zig");
+    _ = @import("meta/SchemaElement.spec.zig");
+
     _ = @import("storage/Local.spec.zig");
     _ = @import("storage/S3.spec.zig");
     _ = @import("storage/Reader.spec.zig");
+
+    // _ = meta;
 }

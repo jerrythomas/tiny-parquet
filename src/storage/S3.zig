@@ -1,11 +1,12 @@
 const std = @import("std");
+var default_allocator = std.heap.page_allocator;
 
 pub const S3 = struct {
     path: []const u8 = undefined,
     size: u64 = 0,
     access_key: []const u8 = undefined,
     secret_key: []const u8 = undefined,
-    allocator: std.mem.Allocator = std.heap.page_allocator,
+    allocator: *std.mem.Allocator = &default_allocator,
 
     pub fn init(url: []const u8, access_key: []const u8, secret_key: []const u8) !S3 {
         var fs = S3{};

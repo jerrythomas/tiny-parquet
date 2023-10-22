@@ -1,6 +1,6 @@
 const Milliseconds = @import("Milliseconds.zig").Milliseconds;
 const Microseconds = @import("Microseconds.zig").Microseconds;
-const Nanoseconds = @import("Nanoseconds.zig").Nanosseconds;
+const Nanoseconds = @import("Nanoseconds.zig").Nanoseconds;
 
 pub const TimeUnit = union(enum) {
     MILLISECONDS: Milliseconds,

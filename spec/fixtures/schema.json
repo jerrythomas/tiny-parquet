@@ -1,0 +1,90 @@
+[
+  {
+    "type": null,
+    "type_length": null,
+    "repetition_type": 0,
+    "name": "schema",
+    "num_children": 4,
+    "converted_type": null,
+    "scale": null,
+    "precision": null,
+    "field_id": null,
+    "logicalType": null
+  },
+  {
+    "type": 2,
+    "type_length": null,
+    "repetition_type": 1,
+    "name": "id",
+    "num_children": null,
+    "converted_type": null,
+    "scale": null,
+    "precision": null,
+    "field_id": null,
+    "logicalType": null
+  },
+  {
+    "type": 6,
+    "type_length": null,
+    "repetition_type": 1,
+    "name": "name",
+    "num_children": null,
+    "converted_type": 0,
+    "scale": null,
+    "precision": null,
+    "field_id": null,
+    "logicalType": {
+      "STRING": {},
+      "MAP": null,
+      "LIST": null,
+      "ENUM": null,
+      "DECIMAL": null,
+      "DATE": null,
+      "TIME": null,
+      "TIMESTAMP": null,
+      "INTEGER": null,
+      "UNKNOWN": null,
+      "JSON": null,
+      "BSON": null,
+      "UUID": null
+    }
+  },
+  {
+    "type": 2,
+    "type_length": null,
+    "repetition_type": 1,
+    "name": "age",
+    "num_children": null,
+    "converted_type": null,
+    "scale": null,
+    "precision": null,
+    "field_id": null,
+    "logicalType": null
+  },
+  {
+    "type": 6,
+    "type_length": null,
+    "repetition_type": 1,
+    "name": "email",
+    "num_children": null,
+    "converted_type": 0,
+    "scale": null,
+    "precision": null,
+    "field_id": null,
+    "logicalType": {
+      "STRING": {},
+      "MAP": null,
+      "LIST": null,
+      "ENUM": null,
+      "DECIMAL": null,
+      "DATE": null,
+      "TIME": null,
+      "TIMESTAMP": null,
+      "INTEGER": null,
+      "UNKNOWN": null,
+      "JSON": null,
+      "BSON": null,
+      "UUID": null
+    }
+  }
+]
