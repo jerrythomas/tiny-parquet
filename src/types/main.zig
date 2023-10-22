@@ -1,3 +1,11 @@
+pub const BoundaryOrder = @import("BoundaryOrder.zig").BoundaryOrder;
+pub const CompressionCodec = @import("CompressionCodec.zig").CompressionCodec;
+pub const DataType = @import("DataType.zig").DataType;
+pub const Encoding = @import("Encoding.zig").Encoding;
+pub const FieldRepetitionType = @import("FieldRepetitionType.zig").FieldRepetitionType;
+pub const PageType = @import("PageType.zig").PageType;
+pub const ConvertedType = @import("ConvertedType.zig").ConvertedType;
+
 pub const BsonType = @import("BsonType.zig").BsonType;
 pub const DateType = @import("DateType.zig").DateType;
 pub const DecimalType = @import("DecimalType.zig").DecimalType;
@@ -16,8 +24,3 @@ pub const UUIDType = @import("UUIDType.zig").UUIDType;
 
 pub const TimeUnit = @import("TimeUnit.zig").TimeUnit;
 pub const LogicalType = @import("LogicalType.zig").LogicalType;
-
-// test {
-//     _ = @import("TimeUnit.spec.zig");
-//     _ = @import("LogicalType.spec.zig");
-// }

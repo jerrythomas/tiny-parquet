@@ -1,5 +1,5 @@
 const std = @import("std");
-const FieldRepetitionType = @import("enum").FieldRepetitionType;
+const FieldRepetitionType = @import("types").FieldRepetitionType;
 
 test "FieldRepetitionType: should convert integer to enum value" {
     try std.testing.expectEqual(FieldRepetitionType.fromValue(0), FieldRepetitionType.REQUIRED);

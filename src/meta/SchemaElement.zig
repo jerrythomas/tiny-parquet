@@ -1,11 +1,12 @@
 const std = @import("std");
+
 const Endian = std.builtin.Endian;
 const AttributeReader = @import("AttributeReader.zig").AttributeReader;
 const AttributeWriter = @import("AttributeWriter.zig").AttributeWriter;
 
-const DataType = @import("enum").DataType;
-const FieldRepetitionType = @import("enum").FieldRepetitionType;
-const ConvertedType = @import("enum").ConvertedType;
+const DataType = @import("types").DataType;
+const FieldRepetitionType = @import("types").FieldRepetitionType;
+const ConvertedType = @import("types").ConvertedType;
 const LogicalType = @import("types").LogicalType;
 
 var default_allocator = std.heap.page_allocator;
@@ -21,6 +22,7 @@ pub const SchemaElement = struct {
     precision: ?i32 = null,
     field_id: ?i32 = null,
     logicalType: ?LogicalType = null,
+
     children: ?[]SchemaElement = null,
     allocator: *std.mem.Allocator = &default_allocator,
 
@@ -38,6 +40,7 @@ pub const SchemaElement = struct {
         self.type_length = try reader.readOptionalNumber(i32);
 
         enum_value = try reader.readOptionalNumber(u8);
+        std.debug.print("Repetition type: {}\n", .{enum_value.?});
         if (enum_value != null) self.repetition_type = try FieldRepetitionType.fromValue(enum_value.?);
 
         self.name = try reader.readString();

@@ -30,9 +30,13 @@ pub const MetaData = struct {
         self.version = try reader.readNumber(i32);
 
         self.schema = try SchemaElement.init(self.allocator);
-        var bytesRead = try self.schema.fromBuffer(buffer[reader.offset..]);
-        reader.offset += bytesRead;
-        self.num_rows = try reader.readNumber(i64);
+
+        for (buffer[4..20]) |i| {
+            std.debug.print("{},", .{i});
+        }
+        // var bytesRead = try self.schema.fromBuffer(buffer[reader.offset..]);
+        // reader.offset += bytesRead;
+        // self.num_rows = try reader.readNumber(i64);
         // const row_groups = try RowGroup.fromBuffer(buffer[20..28]); // pseudo-slice
         // const key_value_metadata = KeyValue.fromBuffer(buffer[28..36]) orelse null; // pseudo-slice
         // const created_by = buffer[36..44]; // pseudo-slice for string

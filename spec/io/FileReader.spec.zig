@@ -1,19 +1,19 @@
 const std = @import("std");
-const Local = @import("storage").Local;
+const io = @import("io");
 
 var default_allocator = std.heap.page_allocator;
 
-test "Local: should initialize" {
+test "FileReader: should initialize" {
     var file = "spec/fixtures/example.txt";
-    const lfs = try Local.init(file);
+    const lfs = try io.FileReader.init(file);
     try std.testing.expectEqualStrings(file, lfs.path);
     try std.testing.expectEqual(default_allocator, lfs.allocator.*);
     try std.testing.expectEqual(@as(?u64, 10), lfs.size);
 }
 
-test "Local: should read random bytes from a file" {
+test "FileReader: should read random bytes from a file" {
     var file = "spec/fixtures/example.txt";
-    const lfs = try Local.init(file);
+    const lfs = try io.FileReader.init(file);
 
     var data = try lfs.read(4, 0);
     try std.testing.expectEqualStrings("hell", data);
@@ -25,17 +25,12 @@ test "Local: should read random bytes from a file" {
     try std.testing.expectEqualStrings("zig!", data);
 }
 
-test "Local: should raise error" {
+test "FileReader: should raise error" {
     var file = "spec/fixtures/example.txt";
-    const lfs = try Local.init(file);
+    const lfs = try io.FileReader.init(file);
 
     var result = lfs.read(4, 11);
     try std.testing.expectEqual(result, error.InvalidOffset);
     result = lfs.read(4, -11);
     try std.testing.expectEqual(result, error.InvalidOffset);
-}
-
-pub fn main() !void {
-    _ = try std.testing.runAllTests();
-    return null;
 }

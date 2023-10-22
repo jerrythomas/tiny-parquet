@@ -1,7 +1,7 @@
 const std = @import("std");
 const Endian = std.builtin.Endian;
 const MetaData = @import("meta").MetaData;
-const Reader = @import("storage").Reader;
+const Reader = @import("io").Reader;
 var default_allocator = std.heap.page_allocator;
 
 pub const Parquet = struct {
@@ -26,7 +26,7 @@ pub const Parquet = struct {
         self.reader.allocator().free(buffer);
         offset -= size + 4;
         buffer = try self.reader.read(size, offset);
-        // self.metadata = ;
+
         _ = try self.metadata.fromBuffer(buffer);
         self.reader.allocator().free(buffer);
         return self.metadata;

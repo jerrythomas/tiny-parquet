@@ -82,7 +82,3 @@ test "LogicalType: should convert enum value to integer" {
     logical_type = try LogicalType.fromValue(14);
     try std.testing.expectEqual(logical_type.toValue(), 14);
 }
-
-pub fn main() void {
-    _ = try std.testing.runAllTests();
-}

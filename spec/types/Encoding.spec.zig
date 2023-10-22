@@ -1,5 +1,5 @@
 const std = @import("std");
-const Encoding = @import("enum").Encoding;
+const Encoding = @import("types").Encoding;
 
 test "Encoding: should convert integer to enum value" {
     try std.testing.expectEqual(Encoding.fromValue(0), Encoding.PLAIN);

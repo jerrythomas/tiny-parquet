@@ -1,5 +1,5 @@
 const std = @import("std");
-const Reader = @import("storage").Reader;
+const io = @import("io");
 
 var default_allocator = std.heap.page_allocator;
 const access_key = "access_key";
@@ -7,7 +7,7 @@ const secret_key = "secret_key";
 
 test "Reader: should initialize local file system" {
     var file = "spec/fixtures/example.txt";
-    var fs = try Reader.fromPath(file);
+    var fs = try io.Reader.fromPath(file);
     try std.testing.expectEqualStrings(file, fs.local.path);
     try std.testing.expectEqual(default_allocator, fs.local.allocator.*);
     try std.testing.expectEqual(@as(?u64, 10), fs.local.size);
@@ -15,7 +15,7 @@ test "Reader: should initialize local file system" {
 
 test "Reader: should initialize s3 file system" {
     var file = "s3://spec/fixtures/example.txt";
-    var fs = try Reader.fromUrlAndKeys(file, access_key, secret_key);
+    var fs = try io.Reader.fromUrlAndKeys(file, access_key, secret_key);
     try std.testing.expectEqualStrings(file[5..], fs.s3.path);
     try std.testing.expectEqualStrings(access_key, fs.s3.access_key);
     try std.testing.expectEqualStrings(secret_key, fs.s3.secret_key);
@@ -25,7 +25,7 @@ test "Reader: should initialize s3 file system" {
 
 test "Reader: should read random bytes from a local file" {
     var file = "spec/fixtures/example.txt";
-    var fs = try Reader.fromPath(file);
+    var fs = try io.Reader.fromPath(file);
 
     var data = try fs.read(4, 0);
     try std.testing.expectEqualStrings("hell", data);
@@ -35,9 +35,4 @@ test "Reader: should read random bytes from a local file" {
     try std.testing.expectEqualStrings("g!", data);
     data = try fs.read(4, -4);
     try std.testing.expectEqualStrings("zig!", data);
-}
-
-pub fn main() !void {
-    _ = try std.testing.runAllTests();
-    return null;
 }

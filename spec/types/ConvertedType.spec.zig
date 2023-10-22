@@ -1,5 +1,5 @@
 const std = @import("std");
-const ConvertedType = @import("enum").ConvertedType;
+const ConvertedType = @import("types").ConvertedType;
 
 test "ConvertedType: should convert integer to enum value" {
     try std.testing.expectEqual(ConvertedType.fromValue(0), ConvertedType.UTF8);

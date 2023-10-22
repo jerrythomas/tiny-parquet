@@ -14,30 +14,29 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const enum_module = b.addModule("enum", .{
-        .source_file = .{ .path = "src/enum/main.zig" },
-    });
+    // const enum_module = b.addModule("enum", .{
+    //     .source_file = .{ .path = "src/enum/main.zig" },
+    // });
     const types_module = b.addModule("types", .{
         .source_file = .{ .path = "src/types/main.zig" },
     });
     const meta_module = b.addModule("meta", .{
         .source_file = .{ .path = "src/meta/main.zig" },
         .dependencies = &.{
-            .{ .name = "enum", .module = enum_module },
+            // .{ .name = "enum", .module = enum_module },
             .{ .name = "types", .module = types_module },
         },
     });
-    const storage_module = b.addModule("storage", .{
+    const io_module = b.addModule("io", .{
         .source_file = .{
-            .path = "src/storage/main.zig",
+            .path = "src/io/main.zig",
         },
-        .dependencies = &.{
-            .{ .name = "enum", .module = enum_module },
-        },
+        // .dependencies = &.{
+        //     .{ .name = "enum", .module = enum_module },
+        // },
     });
     lib.addModule("types", types_module);
-    lib.addModule("enum", enum_module);
-    lib.addModule("storage", storage_module);
+    lib.addModule("io", io_module);
     lib.addModule("meta", meta_module);
     b.installArtifact(lib);
 
@@ -50,23 +49,21 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    example.addModule("enum", enum_module);
     example.addModule("types", types_module);
-    example.addModule("storage", storage_module);
+    example.addModule("io", io_module);
     example.addModule("meta", meta_module);
 
     const run_example = b.addRunArtifact(example);
     run_step.dependOn(&run_example.step);
 
     const tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = .{ .path = "spec/main.spec.zig" },
         .target = target,
         .optimize = optimize,
     });
 
     tests.addModule("types", types_module);
-    tests.addModule("enum", enum_module);
-    tests.addModule("storage", storage_module);
+    tests.addModule("io", io_module);
     tests.addModule("meta", meta_module);
 
     const run_tests = b.addRunArtifact(tests);
