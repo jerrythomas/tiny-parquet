@@ -24,3 +24,32 @@ pub const UUIDType = @import("UUIDType.zig").UUIDType;
 
 pub const TimeUnit = @import("TimeUnit.zig").TimeUnit;
 pub const LogicalType = @import("LogicalType.zig").LogicalType;
+
+test {
+    _ = BoundaryOrder;
+    _ = CompressionCodec;
+    _ = DataType;
+    _ = Encoding;
+    _ = FieldRepetitionType;
+    _ = PageType;
+    _ = ConvertedType;
+
+    _ = BsonType;
+    _ = DateType;
+    _ = DecimalType;
+    _ = EnumType;
+    _ = IntType;
+    _ = JsonType;
+    _ = ListType;
+    _ = MapType;
+    _ = Milliseconds;
+    _ = Microseconds;
+    _ = Nanoseconds;
+    _ = StringType;
+    _ = TimeType;
+    // // _ = TimestampType;
+    _ = UUIDType;
+
+    _ = TimeUnit;
+    _ = LogicalType;
+}

@@ -19,3 +19,20 @@ pub const BoundaryOrder = enum(u8) {
         return @intFromEnum(self);
     }
 };
+
+test "BoundaryOrder: should convert integer to enum value" {
+    try std.testing.expectEqual(BoundaryOrder.fromValue(0), BoundaryOrder.UNORDERED);
+    try std.testing.expectEqual(BoundaryOrder.fromValue(1), BoundaryOrder.ASCENDING);
+    try std.testing.expectEqual(BoundaryOrder.fromValue(2), BoundaryOrder.DESCENDING);
+}
+
+test "BoundaryOrder: should convert from enum" {
+    try std.testing.expect(BoundaryOrder.UNORDERED.toValue() == 0);
+    try std.testing.expect(BoundaryOrder.ASCENDING.toValue() == 1);
+    try std.testing.expect(BoundaryOrder.DESCENDING.toValue() == 2);
+}
+
+test "BoundaryOrder: should throw InvalidBoundaryOrderValue" {
+    const result = BoundaryOrder.fromValue(3);
+    try std.testing.expectEqual(result, error.InvalidBoundaryOrderValue);
+}

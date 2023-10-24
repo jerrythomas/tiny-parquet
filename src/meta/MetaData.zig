@@ -1,8 +1,10 @@
 const std = @import("std");
 const Endian = std.builtin.Endian;
-const AttributeReader = @import("AttributeReader.zig").AttributeReader;
-var default_allocator = std.heap.page_allocator;
+const AttributeReader = @import("thrift").BinaryProtocolReader;
 const SchemaElement = @import("SchemaElement.zig").SchemaElement;
+
+var default_allocator = std.heap.page_allocator;
+
 // const RowGroup = @import("RowGroup.zig");
 // const KeyValue = @import("KeyValue.zig");
 // const ColumnOrder = @import("ColumnOrder.zig");
@@ -30,10 +32,8 @@ pub const MetaData = struct {
         self.version = try reader.readNumber(i32);
 
         self.schema = try SchemaElement.init(self.allocator);
+        std.debug.print("SchemaElement:\n{any}\n", .{buffer[4..]});
 
-        for (buffer[4..20]) |i| {
-            std.debug.print("{},", .{i});
-        }
         // var bytesRead = try self.schema.fromBuffer(buffer[reader.offset..]);
         // reader.offset += bytesRead;
         // self.num_rows = try reader.readNumber(i64);
