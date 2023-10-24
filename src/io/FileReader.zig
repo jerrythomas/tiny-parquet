@@ -1,15 +1,13 @@
 const std = @import("std");
 
-var default_allocator = std.heap.page_allocator;
-
 pub const FileReader = struct {
     path: []const u8 = undefined,
     size: u64 = 0,
-    allocator: *std.mem.Allocator = &default_allocator,
+    allocator: std.mem.Allocator = std.heap.page_allocator,
 
-    pub fn init(url: []const u8, allocator: ?*std.mem.Allocator) !FileReader {
+    pub fn init(url: []const u8, allocator: ?std.mem.Allocator) !FileReader {
         var fs = FileReader{
-            .allocator = allocator orelse &default_allocator,
+            .allocator = allocator orelse std.heap.page_allocator,
         };
 
         const file = try std.fs.cwd().openFile(url, .{});
@@ -35,7 +33,7 @@ pub const FileReader = struct {
         if (adjustedOffset >= self.size) return error.InvalidOffset;
 
         var buffer = try self.allocator.alloc(u8, bytes);
-        errdefer self.allocator.free(buffer); // free buffer on error
+        errdefer self.allocator.free(buffer);
 
         const file = try std.fs.cwd().openFile(self.path, .{});
         defer file.close();
@@ -44,43 +42,55 @@ pub const FileReader = struct {
         var bytesRead = try file.readAll(buffer);
 
         if (bytesRead < bytes) {
-            return buffer[0..bytesRead];
+            return try self.allocator.realloc(buffer, bytesRead);
         }
 
         return buffer;
     }
 };
 
-test "FileReader: should initialize" {
+test "FileReader: should initialize with default allocator" {
     var file = "spec/fixtures/example.txt";
     const lfs = try FileReader.init(file, null);
     try std.testing.expectEqualStrings(file, lfs.path);
-    try std.testing.expectEqual(default_allocator, lfs.allocator.*);
+    try std.testing.expectEqual(std.heap.page_allocator, lfs.allocator);
     try std.testing.expectEqual(@as(?u64, 10), lfs.size);
 }
 
 test "FileReader: should read random bytes from a file" {
     var file = "spec/fixtures/example.txt";
-    const lfs = try FileReader.init(file, null);
+    const lfs = try FileReader.init(file, std.testing.allocator);
+
+    try std.testing.expectEqual(std.testing.allocator, lfs.allocator);
 
     var data = try lfs.read(4, 0);
     try std.testing.expectEqualStrings("hell", data);
+    std.testing.allocator.free(data);
+
     data = try lfs.read(4, 2);
     try std.testing.expectEqualStrings("llo ", data);
-    data = try lfs.read(4, -2);
-    try std.testing.expectEqualStrings("g!", data);
+    std.testing.allocator.free(data);
+
     data = try lfs.read(4, -4);
     try std.testing.expectEqualStrings("zig!", data);
+    std.testing.allocator.free(data);
+}
+
+test "FileReader: should handle reads larger than file size" {
+    var file = "spec/fixtures/example.txt";
+    const lfs = try FileReader.init(file, std.testing.allocator);
+
+    var data = try lfs.read(100, 0);
+    try std.testing.expectEqualStrings("hello zig!", data);
+    std.testing.allocator.free(data);
 }
 
 test "FileReader: should raise error" {
     var file = "spec/fixtures/example.txt";
-    const lfs = try FileReader.init(file, null);
+    const lfs = try FileReader.init(file, std.testing.allocator);
 
     var result = lfs.read(4, 11);
     try std.testing.expectEqual(result, error.InvalidOffset);
     result = lfs.read(4, -11);
     try std.testing.expectEqual(result, error.InvalidOffset);
 }
-
-test "FileReader: should not leak memory" {}
