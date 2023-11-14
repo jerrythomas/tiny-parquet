@@ -3,6 +3,8 @@ const Endian = std.builtin.Endian;
 const types = @import("thrift.types");
 
 const FieldHeader = types.FieldHeader;
+const MapHeader = types.MapHeader;
+
 const ThriftType = types.ThriftType;
 const CompactType = types.CompactType;
 const State = types.State;
@@ -39,17 +41,16 @@ pub const CompactProtocolReader = struct {
         }
     }
 
-    pub fn readNumber(self: *CompactProtocolReader, comptime T: type) !T {
-        const size = @sizeOf(T);
-
-        try checkRemainingSize(self, size);
-
-        const valueSlice = self.buffer[self.offset..][0..size];
-        const value = std.mem.readInt(T, valueSlice, self.endian);
-
+    pub fn readBytes(self: *CompactProtocolReader, size: usize) ![]const u8 {
+        try self.checkRemainingSize(size);
+        const value = self.buffer[self.offset .. self.offset + size];
         self.offset += size;
-
         return value;
+    }
+
+    pub fn readNumber(self: *CompactProtocolReader, comptime T: type) !T {
+        const valueSlice = try self.readBytes(@sizeOf(T));
+        return std.mem.readInt(T, valueSlice, self.endian);
     }
 
     pub fn readVariableInteger(self: *CompactProtocolReader) !i64 {
@@ -89,13 +90,8 @@ pub const CompactProtocolReader = struct {
     }
 
     pub fn readStringOfSize(self: *CompactProtocolReader, size: usize) !?[]const u8 {
-        try self.checkRemainingSize(size);
-
         if (size == 0) return null;
-        const stringValue = self.buffer[self.offset .. self.offset + size];
-        self.offset += size;
-
-        return stringValue;
+        return self.readBytes(size);
     }
 
     pub fn readString(self: *CompactProtocolReader) ![]const u8 {
@@ -162,21 +158,23 @@ pub const CompactProtocolReader = struct {
         self.last_fid = last_item.last_fid;
     }
 
-    pub fn readMapBegin(self: *CompactProtocolReader) !void {
+    pub fn readMapBegin(self: *CompactProtocolReader) !MapHeader {
         if (self.state != State.VALUE_READ and self.state != State.CONTAINER_READ) {
             return error.InvalidState;
         }
+        var header = MapHeader{};
+        header.size = try self.readNumber(u8);
+        try self.checkRemainingSize(size);
+        var kv_types: u8 = 0;
+        if (header.size > 0) kv_types = try self.readNumber(u8);
+        header.value_type = types.ThriftType.from(kv_types & 0x0f);
+        header.key_type = types.ThriftType.from(kv_types >> 4);
+
+        self.containers.append(self.state);
+        self.state = State.CONTAINER_READ;
+        return header;
     }
-    // size = self.__readSize()
-    // self._check_container_length(size)
-    // types = 0
-    // if size > 0:
-    //     types = self.__readUByte()
-    // vtype = self.__getTType(types)
-    // ktype = self.__getTType(types >> 4)
-    // self.__containers.append(self.state)
-    // self.state = CONTAINER_READ
-    // return (ktype, vtype, size)
+
     pub fn readCollectionEnd(self: *CompactProtocolReader) !void {
         if (self.state != State.CONTAINER_READ) return error.InvalidState;
         self.state = self.containers.pop();
