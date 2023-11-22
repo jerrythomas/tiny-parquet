@@ -21,7 +21,7 @@ pub const Parquet = struct {
 
         var offset: i64 = -8;
         var buffer = try self.reader.read(4, offset);
-        var size = std.mem.readVarInt(u32, buffer[0..4], Endian.Little);
+        var size = std.mem.readVarInt(u32, buffer[0..4], Endian.little);
 
         self.reader.allocator().free(buffer);
         offset -= size + 4;

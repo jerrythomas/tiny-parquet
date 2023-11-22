@@ -31,8 +31,8 @@ pub const Statistics = struct {
         self.distinct_count = int_slice[1];
     }
 
-    pub fn toBuffer(self: *Statistics, mem_allocater: ?*std.mem.Allocator) ![]u8 {
-        const allocator = mem_allocater orelse &default_allocator;
+    pub fn toBuffer(self: *Statistics, mem_allocater: std.mem.Allocator) ![]u8 {
+        const allocator = mem_allocater orelse default_allocator;
 
         var buffer = try allocator.alloc(u8, 4 * 10 + 16); // 4 binary fields of max length 10, and 2 i64 fields
         std.mem.copy(u8, buffer[0..10], self.max orelse "          ");

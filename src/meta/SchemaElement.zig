@@ -11,8 +11,6 @@ const FieldRepetitionType = types.FieldRepetitionType;
 const ConvertedType = types.ConvertedType;
 const LogicalType = types.LogicalType;
 
-var default_allocator = std.heap.page_allocator;
-
 pub const SchemaElement = struct {
     type: ?DataType = null,
     type_length: ?i32 = null,
@@ -26,10 +24,10 @@ pub const SchemaElement = struct {
     logicalType: ?LogicalType = null,
 
     children: ?[]SchemaElement = null,
-    allocator: *std.mem.Allocator = &default_allocator,
+    allocator: std.mem.Allocator = std.heap.page_allocator,
 
-    pub fn init(allocator: ?*std.mem.Allocator) !SchemaElement {
-        return SchemaElement{ .allocator = allocator orelse &default_allocator };
+    pub fn init(allocator: std.mem.Allocator) !SchemaElement {
+        return SchemaElement{ .allocator = allocator };
     }
 
     // Each attribute is read in the sequence it is expected in the file.

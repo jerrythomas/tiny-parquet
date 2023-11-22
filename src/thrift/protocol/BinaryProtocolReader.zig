@@ -7,12 +7,12 @@ const MapHeader = types.MapHeader;
 const ListHeader = types.ListHeader;
 const MessageHeader = types.MessageHeader;
 const MessageType = types.MessageType;
-const Types = types.Types;
+const Types = types.ThriftType;
 
 pub const BinaryProtocolReader = struct {
     buffer: []const u8,
     offset: usize = 0,
-    endian: Endian = Endian.Little,
+    endian: Endian = Endian.little,
     strictRead: bool = false,
     strictWrite: bool = true,
     string_length_limit: ?usize = null,
@@ -22,7 +22,7 @@ pub const BinaryProtocolReader = struct {
         return BinaryProtocolReader{
             .buffer = buffer,
             .offset = 0,
-            .endian = Endian.Little,
+            .endian = Endian.little,
         };
     }
 
@@ -35,7 +35,7 @@ pub const BinaryProtocolReader = struct {
     pub fn readNumber(self: *BinaryProtocolReader, comptime T: type) !T {
         const actualSize = @sizeOf(T);
 
-        try checkContainerLength(self, actualSize);
+        try checkRemainingSize(self, actualSize);
 
         const valueSlice = self.buffer[self.offset..][0..actualSize];
         const value = std.mem.readInt(T, valueSlice, self.endian);
@@ -54,13 +54,13 @@ pub const BinaryProtocolReader = struct {
     pub fn readDouble(self: *BinaryProtocolReader) !f64 {
         const size = @sizeOf(f64);
 
-        try checkContainerLength(self, size);
+        try checkRemainingSize(self, size);
 
         return @as(f64, @bitCast(try self.readNumber(u64)));
     }
 
     pub fn readStringOfSize(self: *BinaryProtocolReader, size: usize) !?[]const u8 {
-        try self.checkContainerLength(size);
+        try self.checkRemainingSize(size);
 
         if (size == 0) return null;
         const stringValue = self.buffer[self.offset .. self.offset + size];
@@ -140,7 +140,7 @@ pub const BinaryProtocolReader = struct {
         header.value_type = try Types.fromValue(try self.readNumber(u8));
         header.size = try self.readNumber(i32);
 
-        try self.checkContainerLength(@abs(header.size));
+        try self.checkRemainingSize(@abs(header.size));
         return header;
     }
 
@@ -153,7 +153,7 @@ pub const BinaryProtocolReader = struct {
         header.element_type = try Types.fromValue(try self.readNumber(u8));
         header.size = try self.readNumber(i32);
 
-        try self.checkContainerLength(@abs(header.size));
+        try self.checkRemainingSize(@abs(header.size));
         return header;
     }
 
@@ -169,7 +169,7 @@ pub const BinaryProtocolReader = struct {
         _ = self;
     }
 
-    pub fn checkContainerLength(self: *BinaryProtocolReader, size: usize) !void {
+    pub fn checkRemainingSize(self: *BinaryProtocolReader, size: usize) !void {
         if (self.offset + size > self.buffer.len) {
             return error.NotEnoughDataInBuffer;
         }
@@ -287,12 +287,12 @@ test "BinaryProtocolReader: should read field header" {
     var reader = BinaryProtocolReader.init(&[_]u8{0});
     var value = try reader.readFieldBegin();
 
-    try std.testing.expectEqual(value.field_type, types.Types.STOP);
+    try std.testing.expectEqual(value.field_type, types.ThriftType.STOP);
     try std.testing.expectEqual(value.id, 0);
 
     reader = BinaryProtocolReader.init(&[_]u8{ 1, 2, 0, 0, 0 });
     value = try reader.readFieldBegin();
-    try std.testing.expectEqual(value.field_type, types.Types.VOID);
+    try std.testing.expectEqual(value.field_type, types.ThriftType.VOID);
     try std.testing.expectEqual(value.id, 2);
 }
 
@@ -300,8 +300,8 @@ test "BinaryProtocolReader: should read map header" {
     var reader = BinaryProtocolReader.init(&[_]u8{ 11, 8, 4, 0, 0, 0, 0, 0, 0, 0 });
     var value = try reader.readMapBegin();
 
-    try std.testing.expectEqual(value.key_type, types.Types.STRING);
-    try std.testing.expectEqual(value.value_type, types.Types.I32);
+    try std.testing.expectEqual(value.key_type, types.ThriftType.STRING);
+    try std.testing.expectEqual(value.value_type, types.ThriftType.I32);
     try std.testing.expectEqual(value.size, 4);
 }
 
@@ -309,7 +309,7 @@ test "BinaryProtocolReader: should read list header" {
     var reader = BinaryProtocolReader.init(&[_]u8{ 4, 4, 0, 0, 0, 0, 0, 0, 0 });
     var value = try reader.readListBegin();
 
-    try std.testing.expectEqual(value.element_type, types.Types.DOUBLE);
+    try std.testing.expectEqual(value.element_type, types.ThriftType.DOUBLE);
     try std.testing.expectEqual(value.size, 4);
 }
 
@@ -317,7 +317,7 @@ test "BinaryProtocolReader: should read set header" {
     var reader = BinaryProtocolReader.init(&[_]u8{ 6, 4, 0, 0, 0, 0, 0, 0, 0 });
     var value = try reader.readSetBegin();
 
-    try std.testing.expectEqual(value.element_type, types.Types.I16);
+    try std.testing.expectEqual(value.element_type, types.ThriftType.I16);
     try std.testing.expectEqual(value.size, 4);
 }
 

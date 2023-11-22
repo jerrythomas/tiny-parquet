@@ -1,0 +1,40 @@
+name: Memory and I/O Profiling
+
+on: [push]
+
+jobs:
+  profiling:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Zig
+        uses: dalance/setup-zig@v0.9.0
+        with:
+          zig-version: 0.9.0
+
+      - name: Install Valgrind
+        run: sudo apt-get update && sudo apt-get install -y valgrind
+
+      - name: Install strace
+        run: sudo apt-get update && sudo apt-get install -y strace
+
+      - name: Build and Test
+        run: |
+          zig build test
+          # Add additional build and test commands here as needed
+
+      - name: Memory Profiling with Valgrind
+        run: valgrind --tool=memcheck zig build -Dvalgrind
+
+      - name: I/O Profiling with strace
+        run: strace -f -o strace_output.txt zig build --output-build-ir
+
+      - name: Upload profiling results
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/profiling-results
+          mv valgrind* $GITHUB_WORKSPACE/profiling-results/
+          mv strace_output.txt $GITHUB_WORKSPACE/profiling-results/
+        if: always()

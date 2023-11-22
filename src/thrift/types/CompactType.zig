@@ -1,4 +1,5 @@
 const std = @import("std");
+const ThriftType = @import("ThriftType.zig").ThriftType;
 
 pub const CompactType = enum(u8) {
     STOP = 0x00,
@@ -22,6 +23,24 @@ pub const CompactType = enum(u8) {
 
     pub fn toValue(self: CompactType) u8 {
         return @intFromEnum(self);
+    }
+
+    pub fn asThriftType(self: CompactType) ThriftType {
+        switch (self) {
+            .STOP => return ThriftType.STOP,
+            .TRUE => return ThriftType.BOOL,
+            .FALSE => return ThriftType.BOOL,
+            .BYTE => return ThriftType.BYTE,
+            .I16 => return ThriftType.I16,
+            .I32 => return ThriftType.I32,
+            .I64 => return ThriftType.I64,
+            .DOUBLE => return ThriftType.DOUBLE,
+            .BINARY => return ThriftType.STRING,
+            .LIST => return ThriftType.LIST,
+            .SET => return ThriftType.SET,
+            .MAP => return ThriftType.MAP,
+            .STRUCT => return ThriftType.STRUCT,
+        }
     }
 };
 

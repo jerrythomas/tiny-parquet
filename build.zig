@@ -17,10 +17,19 @@ pub fn build(b: *std.Build) void {
     const thrift_types_module = b.addModule("thrift.types", .{
         .source_file = .{ .path = "src/thrift/types/main.zig" },
     });
+    const thrift_protocol_module = b.addModule("thrift.protocol", .{
+        .source_file = .{ .path = "src/thrift/protocol/main.zig" },
+    });
+    const thrift_transport_module = b.addModule("thrift.transport", .{
+        .source_file = .{ .path = "src/thrift/transport/main.zig" },
+    });
+
     const thrift_module = b.addModule("thrift", .{
         .source_file = .{ .path = "src/thrift/main.zig" },
         .dependencies = &.{
             .{ .name = "thrift.types", .module = thrift_types_module },
+            .{ .name = "thrift.protocol", .module = thrift_protocol_module },
+            .{ .name = "thrift.transport", .module = thrift_transport_module },
         },
     });
 
@@ -31,6 +40,7 @@ pub fn build(b: *std.Build) void {
         .source_file = .{ .path = "src/meta/main.zig" },
         .dependencies = &.{
             .{ .name = "thrift", .module = thrift_module },
+            .{ .name = "thrift.protocol", .module = thrift_protocol_module },
             .{ .name = "types", .module = types_module },
         },
     });

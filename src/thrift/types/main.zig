@@ -1,5 +1,5 @@
 pub const MessageType = @import("MessageType.zig").MessageType;
-pub const Types = @import("Types.zig").Types;
+pub const ThriftType = @import("ThriftType.zig").ThriftType;
 pub const State = @import("State.zig").State;
 pub const CompactType = @import("CompactType.zig").CompactType;
 
@@ -9,18 +9,18 @@ pub const TYPE_MASK: u8 = 255;
 
 pub const FieldHeader = struct {
     name: ?[]const u8 = undefined,
-    field_type: Types = undefined,
+    field_type: ThriftType = undefined,
     id: i16 = 0,
 };
 
 pub const MapHeader = struct {
-    key_type: Types = undefined,
-    value_type: Types = undefined,
+    key_type: ThriftType = undefined,
+    value_type: ThriftType = undefined,
     size: i32 = 0,
 };
 
 pub const ListHeader = struct {
-    element_type: Types = undefined,
+    element_type: ThriftType = undefined,
     size: i32 = 0,
 };
 
@@ -31,9 +31,14 @@ pub const MessageHeader = struct {
     sequence_id: i32 = 0,
 };
 
+pub const Structure = struct {
+    state: State = undefined,
+    last_fid: i16 = 0,
+};
+
 test {
     _ = CompactType;
     _ = MessageType;
-    _ = Types;
+    _ = ThriftType;
     _ = State;
 }

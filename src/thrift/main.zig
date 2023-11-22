@@ -1,10 +1,9 @@
 pub const types = @import("thrift.types");
-pub const BinaryProtocolReader = @import("BinaryProtocolReader.zig").BinaryProtocolReader;
-pub const BinaryProtocolWriter = @import("BinaryProtocolWriter.zig").BinaryProtocolWriter;
+pub const protocol = @import("thrift.protocol");
+pub const transport = @import("thrift.transport");
 
 test {
     _ = types;
-
-    _ = BinaryProtocolReader;
-    _ = BinaryProtocolWriter;
+    _ = protocol;
+    _ = transport;
 }
