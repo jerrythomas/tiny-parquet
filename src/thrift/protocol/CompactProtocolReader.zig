@@ -164,7 +164,7 @@ pub const CompactProtocolReader = struct {
         }
         var header = MapHeader{};
         header.size = try self.readNumber(u8);
-        try self.checkRemainingSize(size);
+        try self.checkRemainingSize(header.size);
         var kv_types: u8 = 0;
         if (header.size > 0) kv_types = try self.readNumber(u8);
         header.value_type = types.ThriftType.from(kv_types & 0x0f);

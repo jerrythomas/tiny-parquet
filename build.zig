@@ -40,6 +40,7 @@ pub fn build(b: *std.Build) void {
         .source_file = .{ .path = "src/meta/main.zig" },
         .dependencies = &.{
             .{ .name = "thrift", .module = thrift_module },
+            .{ .name = "thrift.protocol", .module = thrift_protocol_module },
             .{ .name = "types", .module = types_module },
         },
     });

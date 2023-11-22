@@ -1,9 +1,9 @@
 const std = @import("std");
 const Endian = std.builtin.Endian;
-const AttributeReader = @import("thrift").BinaryProtocolReader;
+const AttributeReader = @import("thrift.protocol").BinaryProtocolReader;
 const SchemaElement = @import("SchemaElement.zig").SchemaElement;
 
-var default_allocator = std.heap.page_allocator;
+// var default_allocator = ;
 
 // const RowGroup = @import("RowGroup.zig");
 // const KeyValue = @import("KeyValue.zig");
@@ -21,10 +21,10 @@ pub const MetaData = struct {
     // encryption_algorithm: ?EncryptionAlgorithm,
     // footer_signing_key_metadata: ?[]u8,
 
-    allocator: *std.mem.Allocator = &default_allocator,
+    allocator: std.mem.Allocator = std.heap.page_allocator,
 
-    pub fn init(allocator: ?*std.mem.Allocator) MetaData {
-        return MetaData{ .allocator = allocator orelse &default_allocator };
+    pub fn init(allocator: std.mem.Allocator) MetaData {
+        return MetaData{ .allocator = allocator };
     }
 
     pub fn fromBuffer(self: *MetaData, buffer: []const u8) !usize {

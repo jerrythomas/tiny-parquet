@@ -12,7 +12,7 @@ const Types = types.ThriftType;
 pub const BinaryProtocolReader = struct {
     buffer: []const u8,
     offset: usize = 0,
-    endian: Endian = Endian.Little,
+    endian: Endian = Endian.little,
     strictRead: bool = false,
     strictWrite: bool = true,
     string_length_limit: ?usize = null,
@@ -22,7 +22,7 @@ pub const BinaryProtocolReader = struct {
         return BinaryProtocolReader{
             .buffer = buffer,
             .offset = 0,
-            .endian = Endian.Little,
+            .endian = Endian.little,
         };
     }
 

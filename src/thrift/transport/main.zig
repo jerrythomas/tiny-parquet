@@ -1,6 +1,6 @@
 const std = @import("std");
-const Transport = @import("Transport.zig").Transport;
-const FileReader = @import("File.zig").FileReader;
+pub const Transport = @import("Transport.zig").Transport;
+pub const FileReader = @import("File.zig").FileReader;
 
 test "Transport: read/write" {
     var t = FileReader{ .allocator = std.testing.allocator };

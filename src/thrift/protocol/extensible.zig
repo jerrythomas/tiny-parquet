@@ -10,39 +10,33 @@ const MapHeader = types.MapHeader;
 const ListHeader = types.ListHeader;
 const SetHeader = types.ListHeader;
 
-pub const Errors = error{
-    BadVersion,
-    NoProtocolVersionHeader,
-    NotEnoughDataInBuffer,
-};
-
 pub const ProtocolReader = struct {
     ptr: *anyopaque,
     impl: *const Interface,
     endian: Endian.Little,
 
     pub const Interface = struct {
-        readBytes: *const fn (ctx: *anyopaque, size: usize) Errors![]const u8,
-        readNumber: *const fn (ctx: *anyopaque, bytes: u8) Errors!i64,
-        readVariableInteger: *const fn (ctx: *anyopaque) Errors!i64,
-        readDouble: *const fn (ctx: *anyopaque) Errors!f64,
-        readStringOfSize: *const fn (ctx: *anyopaque, size: usize) Errors![]const u8,
-        readString: *const fn (ctx: *anyopaque) Errors![]const u8,
-        readBinary: *const fn (ctx: *anyopaque) Errors![]const u8,
-        readBoolean: *const fn (ctx: *anyopaque) Errors!bool,
+        readBytes: *const fn (ctx: *anyopaque, size: usize) anyerror![]const u8,
+        readNumber: *const fn (ctx: *anyopaque, bytes: u8) anyerror!i64,
+        readVariableInteger: *const fn (ctx: *anyopaque) anyerror!i64,
+        readDouble: *const fn (ctx: *anyopaque) anyerror!f64,
+        readStringOfSize: *const fn (ctx: *anyopaque, size: usize) anyerror![]const u8,
+        readString: *const fn (ctx: *anyopaque) anyerror![]const u8,
+        readBinary: *const fn (ctx: *anyopaque) anyerror![]const u8,
+        readBoolean: *const fn (ctx: *anyopaque) anyerror!bool,
 
-        readMessageBegin: *const fn (ctx: *anyopaque) Errors!MessageHeader,
-        readMessageEnd: *const fn (ctx: *anyopaque) Errors!void,
-        readStructBegin: *const fn (ctx: *anyopaque) Errors!StructHeader,
-        readStructEnd: *const fn (ctx: *anyopaque) Errors!void,
-        readFieldBegin: *const fn (ctx: *anyopaque) Errors!FieldHeader,
-        readFieldEnd: *const fn (ctx: *anyopaque) Errors!void,
-        readMapBegin: *const fn (ctx: *anyopaque) Errors!MapHeader,
-        readMapEnd: *const fn (ctx: *anyopaque) Errors!void,
-        readListBegin: *const fn (ctx: *anyopaque) Errors!ListHeader,
-        readListEnd: *const fn (ctx: *anyopaque) Errors!void,
-        readSetBegin: *const fn (ctx: *anyopaque) Errors!SetHeader,
-        readSetEnd: *const fn (ctx: *anyopaque) Errors!void,
+        readMessageBegin: *const fn (ctx: *anyopaque) anyerror!MessageHeader,
+        readMessageEnd: *const fn (ctx: *anyopaque) anyerror!void,
+        readStructBegin: *const fn (ctx: *anyopaque) anyerror!StructHeader,
+        readStructEnd: *const fn (ctx: *anyopaque) anyerror!void,
+        readFieldBegin: *const fn (ctx: *anyopaque) anyerror!FieldHeader,
+        readFieldEnd: *const fn (ctx: *anyopaque) anyerror!void,
+        readMapBegin: *const fn (ctx: *anyopaque) anyerror!MapHeader,
+        readMapEnd: *const fn (ctx: *anyopaque) anyerror!void,
+        readListBegin: *const fn (ctx: *anyopaque) anyerror!ListHeader,
+        readListEnd: *const fn (ctx: *anyopaque) anyerror!void,
+        readSetBegin: *const fn (ctx: *anyopaque) anyerror!SetHeader,
+        readSetEnd: *const fn (ctx: *anyopaque) anyerror!void,
 
         getBytesRead: *const fn (ctx: *anyopaque) usize,
         getBoolValue: *const fn (ctx: *anyopaque) bool,
@@ -50,62 +44,62 @@ pub const ProtocolReader = struct {
         getCurrentFieldId: *const fn (ctx: *anyopaque) i16,
     };
 
-    pub fn readNumber(self: ProtocolReader, comptime T: type) Errors!T {
+    pub fn readNumber(self: ProtocolReader, comptime T: type) anyerror!T {
         var valueSlice = try self.impl.readBytes(self.ptr, @sizeOf(T));
         return std.mem.readInt(T, valueSlice, self.endian);
     }
-    pub fn readVariableInteger(self: ProtocolReader) Errors!i64 {
+    pub fn readVariableInteger(self: ProtocolReader) anyerror!i64 {
         return try self.impl.readVariableInteger(self.ptr);
     }
-    pub fn readDouble(self: ProtocolReader) Errors!f64 {
+    pub fn readDouble(self: ProtocolReader) anyerror!f64 {
         return try self.impl.readDouble(self.ptr);
     }
-    pub fn readStringOfSize(self: ProtocolReader, size: usize) Errors![]const u8 {
+    pub fn readStringOfSize(self: ProtocolReader, size: usize) anyerror![]const u8 {
         return try self.impl.readStringOfSize(self.ptr, size);
     }
-    pub fn readString(self: ProtocolReader) Errors![]const u8 {
+    pub fn readString(self: ProtocolReader) anyerror![]const u8 {
         return try self.impl.readString(self.ptr);
     }
-    pub fn readBinary(self: ProtocolReader) Errors![]const u8 {
+    pub fn readBinary(self: ProtocolReader) anyerror![]const u8 {
         return try self.impl.readBinary(self.ptr);
     }
-    pub fn readBoolean(self: ProtocolReader) Errors!bool {
+    pub fn readBoolean(self: ProtocolReader) anyerror!bool {
         return try self.impl.readBoolean(self.ptr);
     }
-    pub fn readMessageBegin(self: ProtocolReader) Errors!MessageHeader {
+    pub fn readMessageBegin(self: ProtocolReader) anyerror!MessageHeader {
         return try self.impl.readMessageBegin(self.ptr);
     }
-    pub fn readMessageEnd(self: ProtocolReader) Errors!void {
+    pub fn readMessageEnd(self: ProtocolReader) anyerror!void {
         return try self.impl.readMessageEnd(self.ptr);
     }
-    pub fn readStructBegin(self: ProtocolReader) Errors!StructHeader {
+    pub fn readStructBegin(self: ProtocolReader) anyerror!StructHeader {
         return try self.impl.readStructBegin(self.ptr);
     }
-    pub fn readStructEnd(self: ProtocolReader) Errors!void {
+    pub fn readStructEnd(self: ProtocolReader) anyerror!void {
         return try self.impl.readStructEnd(self.ptr);
     }
-    pub fn readFieldBegin(self: ProtocolReader) Errors!FieldHeader {
+    pub fn readFieldBegin(self: ProtocolReader) anyerror!FieldHeader {
         return try self.impl.readFieldBegin(self.ptr);
     }
-    pub fn readFieldEnd(self: ProtocolReader) Errors!void {
+    pub fn readFieldEnd(self: ProtocolReader) anyerror!void {
         return try self.impl.readFieldEnd(self.ptr);
     }
-    pub fn readMapBegin(self: ProtocolReader) Errors!MapHeader {
+    pub fn readMapBegin(self: ProtocolReader) anyerror!MapHeader {
         return try self.impl.readMapBegin(self.ptr);
     }
-    pub fn readMapEnd(self: ProtocolReader) Errors!void {
+    pub fn readMapEnd(self: ProtocolReader) anyerror!void {
         return try self.impl.readMapEnd(self.ptr);
     }
-    pub fn readListBegin(self: ProtocolReader) Errors!ListHeader {
+    pub fn readListBegin(self: ProtocolReader) anyerror!ListHeader {
         return try self.impl.readListBegin(self.ptr);
     }
-    pub fn readListEnd(self: ProtocolReader) Errors!void {
+    pub fn readListEnd(self: ProtocolReader) anyerror!void {
         return try self.impl.readListEnd(self.ptr);
     }
-    pub fn readSetBegin(self: ProtocolReader) Errors!SetHeader {
+    pub fn readSetBegin(self: ProtocolReader) anyerror!SetHeader {
         return try self.impl.readSetBegin(self.ptr);
     }
-    pub fn readSetEnd(self: ProtocolReader) Errors!void {
+    pub fn readSetEnd(self: ProtocolReader) anyerror!void {
         return try self.impl.readSetEnd(self.ptr);
     }
 
